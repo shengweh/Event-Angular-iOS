@@ -1,0 +1,48 @@
+PODS:
+  - Alamofire (4.7.3)
+  - EasyToast (2.0.2)
+  - GoogleMaps (2.7.0):
+    - GoogleMaps/Maps (= 2.7.0)
+  - GoogleMaps/Base (2.7.0)
+  - GoogleMaps/Maps (2.7.0):
+    - GoogleMaps/Base
+  - Kingfisher (4.10.1)
+  - McPicker (2.0.0)
+  - SearchTextField (1.2.2)
+  - SwiftSpinner (1.6.2)
+  - SwiftyJSON (4.2.0)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.7)
+  - EasyToast (~> 2.0.0)
+  - GoogleMaps
+  - Kingfisher (= 4.10.1)
+  - McPicker (~> 2.0.0)
+  - SearchTextField
+  - SwiftSpinner
+  - SwiftyJSON (~> 4.0)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - EasyToast
+    - GoogleMaps
+    - Kingfisher
+    - McPicker
+    - SearchTextField
+    - SwiftSpinner
+    - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  EasyToast: 2844de2158fe8d2313c6de81b5a858a909d82532
+  GoogleMaps: f79af95cb24d869457b1f961c93d3ce8b2f3b848
+  Kingfisher: c148cd7b47ebde9989f6bc7c27dcaa79d81279a0
+  McPicker: 1d11ad8c07c337a16dd9397e45f321125304cbb0
+  SearchTextField: a0992739d4b05dcbb40fb3a5cc6526bd991bdd23
+  SwiftSpinner: 3a4c6dea425e5a31b908a8b1dd5dcd1ad4d96340
+  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+
+PODFILE CHECKSUM: 6d87d7175b2fd33d8407ffe8306af4b641e7bbf5
+
+COCOAPODS: 1.5.3

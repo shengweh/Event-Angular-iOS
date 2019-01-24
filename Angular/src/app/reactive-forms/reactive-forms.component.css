@@ -1,0 +1,20 @@
+button i {
+  float: left;
+}
+#clearButton{
+  border: 1px lightgrey solid;
+  background-color: white;
+  margin-left: 10px;
+}
+.form-control.form-control-sm.ng-touched.ng-invalid {
+  border: 2px solid red;
+}
+
+form{
+  font-size: 0.85em;
+}
+
+form select {
+  font-size: 0.95em;
+
+}

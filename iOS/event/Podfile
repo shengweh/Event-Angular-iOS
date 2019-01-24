@@ -1,0 +1,15 @@
+platform :ios, '10.0'
+
+source 'https://github.com/CocoaPods/Specs.git'
+target 'event' do
+  use_frameworks!
+
+  pod 'EasyToast', '~> 2.0.0'
+  pod 'McPicker', '~> 2.0.0'
+  pod 'SwiftSpinner'
+  pod 'Kingfisher', '4.10.1'
+  pod 'GoogleMaps'
+  pod 'Alamofire', '~> 4.7'
+  pod 'SwiftyJSON', '~> 4.0'
+  pod 'SearchTextField'
+end

@@ -1,0 +1,45 @@
+table{
+  font-size: 0.85em;
+}
+
+td{
+  vertical-align: middle;
+}
+
+th{
+  vertical-align: middle;
+}
+
+button i {
+  float: left;
+}
+
+nav{
+  font-size: 0.85em;
+}
+
+/*#fav-nav-tabContent{*/
+  /*font-size: 0.85em;*/
+/*}*/
+
+.progress-wrapper {
+  position: relative;
+  text-align: center;
+  width: 32px;
+}
+
+.current {
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.card{
+  padding: 10px 0px 30px 15px;
+  margin-bottom: 10px;
+}
+
+agm-map{
+  height: 300px;
+}

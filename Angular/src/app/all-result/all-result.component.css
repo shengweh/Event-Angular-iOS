@@ -1,0 +1,66 @@
+#result-table{
+  font-size: 0.85em;
+}
+
+td{
+  vertical-align: middle;
+}
+
+th{
+  vertical-align: middle;
+}
+.one {
+  background-color: #fddb93;
+}
+.two{
+
+}
+button i {
+  float: left;
+}
+
+/*@media (min-width: 370px) and (max-width: 380px) {*/
+  /*.nav-item{*/
+    /*font-size: 0.75em;*/
+  /*}*/
+/*}*/
+/*@media (min-width: 410px) and (max-width: 415px) {*/
+  /*.nav-item{*/
+    /*font-size: 0.92em;*/
+  /*}*/
+/*}*/
+
+
+
+nav{
+  font-size: 0.85em;
+}
+
+#nav-tabContent{
+  font-size: 0.85em;
+}
+
+.progress-wrapper {
+  position: relative;
+  text-align: center;
+  width: 32px;
+}
+
+.current {
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.card{
+  padding: 10px 0px 30px 15px;
+  margin-bottom: 10px;
+}
+
+
+agm-map{
+  height: 300px;
+}
+
+

@@ -1,0 +1,457 @@
+
+
+
+<!--alert bar   network problem! -->
+<div *ngIf="errorHappened; else noError" style="margin-top: 120px;">
+  <div class="alert alert-danger" role="alert">
+    Failed to get search results.
+  </div>
+</div>
+
+
+<ng-template #noError>
+
+  <div *ngIf="getLocalStorageSize()==0" style="">
+    <div class="alert alert-warning" role="alert">
+      No records.
+    </div>
+  </div>
+
+
+
+  <div *ngIf="progressStatus == true" class="container"  style="margin-top: 120px;">
+    <div class="progress">
+      <div class="progress-bar progress-bar-striped progress-bar-animated"
+           role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+      </div>
+    </div>
+  </div>
+
+
+  <!--list table-->
+  <div *ngIf="displayDetailView== false && getLocalStorageSize()>0" [@slideInOut3]>
+
+
+    <button class="btn btn-light btn-sm" [disabled]=detailViewPristine (click)="showDetails(true)"
+            style="float: right; border: 1px lightgrey solid; margin-bottom: 5px;font-size: 0.85em;">
+      <i class="material-icons">keyboard_arrow_right</i> Details
+    </button>
+
+    <div class="table-responsive text-nowrap">
+
+      <table id="result-table" class="table table-hover">
+        <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Date</th>
+          <th scope="col">Event</th>
+          <th scope="col">Category</th>
+          <th scope="col">Venue Info</th>
+          <th scope="col">Favorites</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr [ngStyle]="{'background-color': eventDetailID == event.id ? '#fddb93' : ' '}"
+            *ngFor="let event of eventData; index as i">
+
+          <th scope="row"> {{i+1}}</th>
+
+          <td scope="row"> {{event.dates.start.localDate}}</td>
+
+          <td scope="row">
+            <a href="javascript:void(0)" matTooltip={{event.name}}
+               (click)="getDetails(event.id, event._embedded.attractions, event._embedded.venues,event)">
+              {{event.name.length > 32 ? event.name.substring(0,32)+'...' : event.name}}
+            </a>
+          </td>
+
+
+          <!--classifications undefeined-->
+          <td *ngIf="event.classifications== undefined" scope="row">
+            N/A - N/A
+          </td>
+          <!--classifications defeined-->
+          <td *ngIf="event.classifications!= undefined" scope="row">
+            {{(event.classifications[0].genre.name == undefined || event.classifications[0].genre.name.toLowerCase() ==
+            'undefined') ? 'N/A' : event.classifications[0].genre.name}}-{{(event.classifications[0].segment.name ==
+            undefined || event.classifications[0].segment.name.toLowerCase() ==
+            'undefined')? 'N/A' : event.classifications[0].segment.name}}
+          </td>
+
+
+          <td scope="row">
+            <span *ngIf="event._embedded.venues[0].name!=undefined">
+              {{event._embedded.venues[0].name > 32 ?
+            event._embedded.venues[0].name.substring(0,32)+'...' : event._embedded.venues[0].name}}
+            </span>
+            <span *ngIf="event._embedded.venues[0].name==undefined">N/A</span>
+
+          </td>
+
+          <td>
+            <button (click)="removeFav(event.id)" class="btn btn-light" style="border: 1px lightgrey solid;">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+
+
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+
+
+  <!--detail table container-->
+  <div *ngIf="displayDetailView== true && progressStatus == false && getLocalStorageSize()>0" [@slideInOut]>
+
+    <div *ngIf="eventDetail!=undefined"
+         style="font-weight: 800; font-size: 1.1em; text-align: center; margin-top: 20px;">{{eventDetail.name}}
+    </div>
+
+    <div style="margin-bottom: 5px">
+      <button class="btn btn-sm btn-light" style=" border: 1px lightgrey solid;"
+              (click)="showDetails(false)">
+        <i class="material-icons">keyboard_arrow_left</i> List
+      </button>
+
+      <div style="float: right">
+        <a class="twitter-share-button" target="_blank"
+           href={{twitterText}}>
+          <img src="http://csci571.com/hw/hw8/Images/Twitter.png" style="width: 35px">
+        </a>
+
+
+        <button class="btn btn-light btn-sm" style="border: 1px lightgrey solid; margin-left: 5px;"
+                (click)="bookmark(eventDetailID, eventJSON); ">
+          <i *ngIf="checkLocalStraoge(eventDetailID) != null" class="material-icons" style="color:#f8d556;">star</i>
+          <i *ngIf="checkLocalStraoge(eventDetailID) == null" class="material-icons">star_border</i>
+        </button>
+      </div>
+    </div>
+
+
+    <nav style="float: right">
+
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-event-tab" data-toggle="tab" href="#nav-event"
+           role="tab" aria-controls="nav-home" aria-selected="true">
+          Event
+        </a>
+
+        <a *ngIf="!mobile" class="nav-item nav-link"data-toggle="tab" href="#nav-artist"
+           role="tab" aria-controls="nav-profile" aria-selected="false">
+          Artist/Teams
+        </a>
+        <a *ngIf="mobile" class="nav-item nav-link" data-toggle="tab" href="#nav-artist"
+           role="tab" aria-controls="nav-profile" aria-selected="false">
+          Artist
+        </a>
+
+
+        <a class="nav-item nav-link" id="nav-venue-tab" data-toggle="tab" href="#nav-venue"
+           role="tab" aria-controls="nav-contact" aria-selected="false">
+          Venue
+        </a>
+
+
+        <a *ngIf="!mobile" class="nav-item nav-link" data-toggle="tab" href="#nav-upcoming"
+           role="tab" aria-controls="nav-contact" aria-selected="false">
+          Upcoming Events
+        </a>
+        <a *ngIf="mobile" class="nav-item nav-link" data-toggle="tab" href="#nav-upcoming"
+           role="tab" aria-controls="nav-contact" aria-selected="false">
+          Upcoming
+        </a>
+      </div>
+    </nav>
+
+    <br><br>
+    <div class="tab-content" id="fav-nav-tabContent">
+
+      <!--event tab-->
+      <div class="tab-pane fade show active table-responsive-sm text-nowrap" id="nav-event" role="tabpanel"
+           aria-labelledby="nav-event-tab">
+        <table class="table table-striped" *ngIf="eventDetail != undefined">
+          <tbody>
+          <tr *ngIf="  artistNameList!=undefined &&artistNameList.length > 1">
+            <th scope="row">Artist/Team(s)</th>
+            <td>{{artistNameList}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Venue</th>
+            <td>{{eventDetail._embedded.venues[0].name}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Time</th>
+            <td>{{eventDetail.dates.start.localDate | date}}
+              {{eventDetail.dates.start.localTime == undefined ? '' : eventDetail.dates.start.localTime }}
+            </td>
+          </tr>
+          <tr *ngIf="eventDetail.classifications != undefined">
+            <th scope="row">Category</th>
+            <td>
+              {{(eventDetail.classifications[0].segment.name == undefined ||
+              eventDetail.classifications[0].segment.name.toLowerCase() == 'undefined') ? 'N/A' :
+              eventDetail.classifications[0].segment.name}} |
+              {{(eventDetail.classifications[0].genre.name == undefined ||
+              eventDetail.classifications[0].genre.name.toLowerCase() == 'undefined' ) ? 'N/A' :
+              eventDetail.classifications[0].genre.name}}
+            </td>
+          </tr>
+
+          <tr *ngIf="eventDetail.priceRanges != undefined">
+            <th scope="row">Price Range</th>
+            <td> ${{eventDetail.priceRanges[0].min == undefined ? 'N / A' : eventDetail.priceRanges[0].min}} ~
+              ${{eventDetail.priceRanges[0].max == undefined ? 'N / A' : eventDetail.priceRanges[0].max}}
+            </td>
+          </tr>
+          <tr *ngIf="eventDetail.dates.status.code != undefined">
+            <th scope="row">Ticket Status</th>
+            <td>{{eventDetail.dates.status.code}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Buy Ticket At</th>
+            <td><a href={{eventDetail.url}} target="_blank">Ticketmaster</a></td>
+          </tr>
+          <tr>
+            <th scope="row">Seat Map</th>
+            <td>
+              <a href="javascript:void(0)" data-toggle="modal" data-target="#exampleModal">View Seat Map Here</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--artist tab-->
+      <div class="tab-pane fade" id="nav-artist" role="tabpanel" aria-labelledby="nav-artist-tab">
+
+
+        <div *ngIf="attractPlayers.length!=0">
+
+          <div *ngFor="let player of attractPlayers">
+
+            <div *ngIf="findMusician(player.pname)==true">
+
+              <div *ngIf="musicArtistArray.length!=0" class="table-responsive-sm">
+
+                <div *ngFor="let musician of getMusician(player.pname)">
+                  <table class="table table-striped">
+                    <thead>
+                    <tr style="text-align: center">
+                      <th colspan="2" style="font-size: 1.2em">{{musician.name}}</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                      <th class="col-xs-6">Name</th>
+                      <td class="col-xs-6">{{musician.name}}</td>
+                    </tr>
+
+                    <tr>
+                      <th>Followers</th>
+                      <td>{{musician.followers.total | number}}</td>
+                    </tr>
+
+                    <tr>
+                      <th>Popularity</th>
+                      <td>
+                        <div class="progress-wrapper">
+
+                          <round-progress [current]=musician.popularity
+                                          [max]=100 [color]="'#87b246'"
+                                          [stroke]="20"
+                                          [responsive]="true">
+                          </round-progress>
+                          <div class="current">{{musician.popularity}}</div>
+
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <th>Check At</th>
+                      <td><a href={{musician.external_urls.spotify}} target="_blank"> Spotify </a></td>
+                    </tr>
+                    </tbody>
+
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div style="text-align: center; font-weight: 600; font-size: 1em"> {{player.pname}}</div>
+
+            <div class="card-columns">
+              <div *ngFor="let item of player.items" class="card" style="padding: 5px">
+                <a *ngIf="item.link != undefined" href={{item.link}} target="_blank">
+                  <img src={{item.link}} class="img-fluid">
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+        <div *ngIf="musicArtistArray.length == 0 && attractPlayers.length==0"
+             style="margin-top: 150px; margin-bottom: 150px;">
+          <div class="alert alert-warning" role="alert">No records.</div>
+        </div>
+
+
+      </div>
+
+
+      <!--venue tab-->
+      <div class="tab-pane fade" id="nav-venue" role="tabpanel" aria-labelledby="nav-venue-tab">
+        <div *ngIf="venueDetail != undefined" style="font-size: 1.1em; font-weight: 600; text-align: center">
+          {{venueDetail._embedded.venues[0].name}}
+        </div>
+        <table class="table table-striped" *ngIf="venueDetail != undefined">
+          <tbody>
+          <tr *ngIf="venueDetail._embedded.venues[0].address!=undefined">
+            <th scope="row">Address</th>
+            <td>{{venueDetail._embedded.venues[0].address.line1}}</td>
+          </tr>
+
+          <tr>
+            <th scope="row">Venue</th>
+            <td>
+              <span *ngIf="venueDetail._embedded.venues[0].state == undefined">
+                {{venueDetail._embedded.venues[0].city.name}}
+              </span>
+
+              <span *ngIf="venueDetail._embedded.venues[0].state != undefined">
+                {{venueDetail._embedded.venues[0].city.name}}, {{venueDetail._embedded.venues[0].state.name}}
+              </span>
+            </td>
+          </tr>
+
+          <tr *ngIf="venueDetail._embedded.venues[0].boxOfficeInfo != undefined
+          && venueDetail._embedded.venues[0].boxOfficeInfo.phoneNumberDetail != undefined">
+            <th scope="row">Phone Number</th>
+            <td>{{venueDetail._embedded.venues[0].boxOfficeInfo.phoneNumberDetail}}</td>
+          </tr>
+
+          <tr *ngIf="venueDetail._embedded.venues[0].boxOfficeInfo != undefined
+          && venueDetail._embedded.venues[0].boxOfficeInfo.openHoursDetail != undefined">
+            <th scope="row">Open Hours</th>
+            <td>{{venueDetail._embedded.venues[0].boxOfficeInfo.openHoursDetail}}</td>
+          </tr>
+
+          <tr *ngIf="venueDetail._embedded.venues[0].generalInfo != undefined
+          && venueDetail._embedded.venues[0].generalInfo.generalRule != undefined">
+            <th scope="row">General Rule</th>
+            <td>{{venueDetail._embedded.venues[0].generalInfo.generalRule}}</td>
+          </tr>
+
+          <tr *ngIf="venueDetail._embedded.venues[0].generalInfo != undefined
+          && venueDetail._embedded.venues[0].generalInfo.childRule != undefined">
+            <th scope="row">Child Rule</th>
+            <td>{{venueDetail._embedded.venues[0].generalInfo.childRule}}</td>
+          </tr>
+          </tbody>
+        </table>
+
+
+        <agm-map [zoom]=14 [latitude]=venueLat [longitude]=venuelng>
+          <agm-marker [latitude]=venueLat [longitude]=venuelng></agm-marker>
+        </agm-map>
+      </div>
+
+      <!--upcoming tab-->
+      <div class="tab-pane fade" id="nav-upcoming" role="tabpanel" aria-labelledby="nav-upcoming-tab">
+
+
+
+
+        <div *ngIf="upcomings !=undefined" [@listAnimation]="numberToShow">
+
+          <div style="margin-bottom: 10px">
+
+            <form [formGroup]="sortOptions">
+
+              <select class="custom-select custom-select-sm col-sm-3" (change)="changeByWhat()"
+                      style="font-size: 1em"
+                      formControlName="byWhat">
+                <option value="default">Default</option>
+                <option value="event">Event Name</option>
+                <option value="time">Time</option>
+                <option value="artist">Artist</option>
+                <option value="type">Type</option>
+              </select>
+
+              <select class="custom-select custom-select-sm col-sm-3" (change)="changeByWhat()"
+                      style="font-size: 1em"
+                      formControlName="orderDirection">
+                <option value="ascending">Ascending</option>
+                <option value="descending">Descending</option>
+              </select>
+
+            </form>
+
+          </div>
+
+          <div *ngFor="let v of upcomings | slice:0:numberToShow" class="card">
+            <div><a href={{v.uri}} target="_blank"> {{v.displayName}}</a></div>
+            <div>
+              <span style="color:#e5783d">Artist: {{v.performance[0].displayName}} </span>
+              <span style="color:grey">{{v.start.date | date}} {{v.start.time != undefined ? v.start.time : ''}}</span>
+            </div>
+            <div>Type: {{v.type}}</div>
+          </div>
+
+          <div style="text-align: center; margin-top: 50px; margin-bottom:20px;">
+            <button class="btn btn-sm btn-primary" (click)="showMore()">{{showMoreLessBtnText}}</button>
+          </div>
+
+        </div>
+
+        <div *ngIf="upcomings ==undefined" style="margin-top: 150px; margin-bottom: 150px;">
+          <div class="alert alert-warning" role="alert">No records.</div>
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <!--venue image modal popup -->
+    <div *ngIf="eventDetail != undefined" class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">View Seat Map</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" style="text-align: center">
+            <a *ngIf="eventDetail.seatmap!==undefined" href={{eventDetail.seatmap.staticUrl}} target="_blank">
+              <img *ngIf="eventDetail.seatmap!==undefined"
+                   src={{eventDetail.seatmap.staticUrl}} style="max-width: 100%; height: auto;" alt="no seat map image">
+            </a>
+            <span *ngIf="eventDetail.seatmap==undefined">no seat map data</span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+</ng-template>
